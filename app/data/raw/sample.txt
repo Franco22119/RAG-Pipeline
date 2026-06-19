@@ -1,9 +1,0 @@
-The quick brown fox jumps over the lazy dog. This is a classic pangram used for typing practice and font testing.
-
-Machine learning is a subset of artificial intelligence that enables systems to learn from data without being explicitly programmed. It includes supervised, unsupervised, and reinforcement learning approaches.
-
-Python is a popular programming language known for its readability and versatility. It is widely used in data science, web development, automation, and machine learning.
-
-FAISS (Facebook AI Similarity Search) is a library for efficient similarity search and clustering of dense vectors. It supports various indexing methods including flat, IVF, and HNSW for different trade-offs between speed and accuracy.
-
-BM25 (Best Matching 25) is a ranking function used in information retrieval to estimate the relevance of documents to a given search query. It is based on the probabilistic retrieval framework and uses term frequency and inverse document frequency.
