@@ -39,6 +39,10 @@ rag-pipeline/
 │   │   ├── dense.py      # Dense retrieval con FAISS + Sentence Transformers
 │   │   ├── sparse.py     # Sparse retrieval con BM25 (rank-bm25)
 │   │   └── hybrid.py     # Fusión híbrida (RRF, weighted sum)
+|   ├── ingestion/
+|   |   ├── chunking.py    # Transforma la data en chunks para el procesado
+|   |   ├── loader.py      # Carga la informacion desde documentos .txt y .md
+|   |   ├── embeddings.py  # Genera el embeddings de los chunks
 │   ├── reranker/
 │   │   └── cross_encoder.py  # Cross-encoder reranker (sentence-transformers)
 │   ├── evaluation/
