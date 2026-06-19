@@ -1,9 +1,12 @@
+"""Unit tests for HybridRetrieval (RRF fusion)."""
+
 import pytest
 
 from app.retrieval.hybrid import HybridRetrieval
 
 
 def _make_chunk(source: str, chunk_id: int):
+    """Helper to create a chunk dict matching the output of chunk_documents."""
     return {
         "content": f"content from {source}",
         "metadata": {"source": source, "chunk_id": chunk_id},
@@ -11,14 +14,17 @@ def _make_chunk(source: str, chunk_id: int):
 
 
 def _dense_result(source: str, chunk_id: int, score: float):
+    """Helper to create a mock DenseRetriever result."""
     return {"document": _make_chunk(source, chunk_id), "score": score}
 
 
 def _sparse_result(source: str, chunk_id: int, score: float):
+    """Helper to create a mock SparseRetriever result."""
     return {"document": _make_chunk(source, chunk_id), "score": score}
 
 
 def test_fuse_basic():
+    """Fusing two result lists returns the correct number of results in descending score order."""
     dense_results = [
         _dense_result("doc1.txt", 0, 0.9),
         _dense_result("doc2.txt", 0, 0.8),
@@ -42,6 +48,7 @@ def test_fuse_basic():
 
 
 def test_fuse_dense_only():
+    """Fusing with only dense results works as a passthrough."""
     dense_results = [
         _dense_result("doc1.txt", 0, 0.9),
         _dense_result("doc2.txt", 0, 0.8),
@@ -54,6 +61,7 @@ def test_fuse_dense_only():
 
 
 def test_fuse_sparse_only():
+    """Fusing with only sparse results works as a passthrough."""
     sparse_results = [
         _sparse_result("doc1.txt", 0, 5.0),
         _sparse_result("doc2.txt", 0, 3.0),
@@ -66,6 +74,7 @@ def test_fuse_sparse_only():
 
 
 def test_fuse_empty_both():
+    """ValueError is raised when both result lists are empty."""
     hybrid = HybridRetrieval()
 
     with pytest.raises(ValueError):
@@ -73,6 +82,7 @@ def test_fuse_empty_both():
 
 
 def test_fuse_top_k():
+    """top_k limits the number of fused results returned."""
     dense_results = [
         _dense_result(f"doc{i}.txt", 0, 0.5) for i in range(10)
     ]
@@ -87,6 +97,7 @@ def test_fuse_top_k():
 
 
 def test_fuse_top_k_greater_than_available():
+    """top_k is capped when it exceeds the number of unique documents."""
     dense_results = [
         _dense_result("doc1.txt", 0, 0.9),
         _dense_result("doc2.txt", 0, 0.8),
@@ -99,6 +110,7 @@ def test_fuse_top_k_greater_than_available():
 
 
 def test_fuse_duplicate_across_systems():
+    """A document appearing in both result lists is not duplicated."""
     shared = _make_chunk("doc1.txt", 0)
     dense_results = [
         {"document": shared, "score": 0.9},
@@ -114,6 +126,7 @@ def test_fuse_duplicate_across_systems():
 
 
 def test_fuse_scores_descending():
+    """Fused results are always sorted by score descending."""
     dense_results = [
         _dense_result("doc1.txt", 0, 0.9),
         _dense_result("doc2.txt", 0, 0.8),
@@ -135,6 +148,7 @@ def test_fuse_scores_descending():
 
 
 def test_fuse_rrf_k_effect():
+    """Each result at rank 0 contributes exactly 1/(1+rrf_k) to the fused score."""
     doc1 = _make_chunk("doc1.txt", 0)
     doc2 = _make_chunk("doc2.txt", 0)
 
@@ -152,8 +166,9 @@ def test_fuse_rrf_k_effect():
         else:
             assert r["score"] == pytest.approx(sparse_rrf)
 
-def test_rrf_score_accumulation():
 
+def test_rrf_score_accumulation():
+    """A document ranked first in both systems receives double the RRF score of a single occurrence."""
     shared = _make_chunk("doc1.txt", 0)
     dense = [
         {

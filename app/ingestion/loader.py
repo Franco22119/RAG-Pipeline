@@ -1,11 +1,8 @@
-# Responsability: Read data from a source and return it in uniform format
+# Responsibility: Read data from a source and return it in uniform format
 
 from pathlib import Path
 
-# This module defines the load_documents function, which reads text files from a specified directory 
-# and returns a list of documents in a uniform format (dictionaries with 'content' and 'metadata' keys). 
-# The function filters for files with .txt and .md extensions and reads their content into memory.
-def load_documents(source: str):
+def load_documents(source: str) -> list[dict]:
     documents = []
     data_dir = Path(source)
     for file_path in data_dir.iterdir():

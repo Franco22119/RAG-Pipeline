@@ -1,8 +1,12 @@
+"""Unit tests for SparseRetriever."""
+
 import pytest
 
 from app.retrieval.sparse import SparseRetriever
 
+
 def test_build_index():
+    """Build a BM25 index and verify it stores the chunks correctly."""
     retriever = SparseRetriever()
     chunks = [
         {'content': 'Python is a programming language', 'metadata': {'source': 'doc1.txt', 'chunk_id': 0}},
@@ -14,13 +18,17 @@ def test_build_index():
     assert retriever.bm25 is not None
     assert retriever.documents == chunks
 
+
 def test_tokenize():
+    """Tokenization lowercases text and extracts word tokens, discarding punctuation."""
     retriever = SparseRetriever()
     text = "Hello, World! This is a test."
     tokens = retriever._tokenize(text)
     assert tokens == ['hello', 'world', 'this', 'is', 'a', 'test']
 
+
 def test_search():
+    """Search returns results in the correct format with the most relevant document first."""
     retriever = SparseRetriever()
     chunks = [
         {'content': 'Python is a programming language used in data science', 'metadata': {'source': 'doc1.txt', 'chunk_id': 0}},
@@ -39,6 +47,7 @@ def test_search():
 
 
 def test_search_top_k():
+    """top_k is capped at the number of indexed documents, never returns more than available."""
     retriever = SparseRetriever()
     chunks = [
         {'content': f'Document number {i} contains unique vocabulary about topic A', 'metadata': {}}
@@ -58,6 +67,7 @@ def test_search_top_k():
 
 
 def test_build_index_empty():
+    """ValueError is raised when building an index with an empty chunk list."""
     retriever = SparseRetriever()
 
     with pytest.raises(ValueError):
@@ -65,6 +75,7 @@ def test_build_index_empty():
 
 
 def test_search_without_index():
+    """ValueError is raised when search is called before building the index."""
     retriever = SparseRetriever()
 
     with pytest.raises(ValueError):
@@ -72,6 +83,7 @@ def test_search_without_index():
 
 
 def test_search_relevance():
+    """The document with the most matching keywords appears first in the results."""
     retriever = SparseRetriever()
     chunks = [
         {'content': 'Python programming language for data science and machine learning', 'metadata': {'source': 'doc1.txt'}},
@@ -88,6 +100,7 @@ def test_search_relevance():
 
 
 def test_search_scores_descending():
+    """Results are always returned in descending score order."""
     retriever = SparseRetriever()
     chunks = [
         {'content': 'Python programming for data science and machine learning applications', 'metadata': {}},

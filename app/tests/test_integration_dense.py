@@ -1,3 +1,5 @@
+"""Integration test: full pipeline with DenseRetriever."""
+
 import pytest
 from pathlib import Path
 
@@ -9,10 +11,12 @@ from app.retrieval.dense import DenseRetriever
 
 @pytest.fixture(scope="module")
 def embedding_generator():
+    """Shared EmbeddingGenerator fixture, loaded once per module."""
     return EmbeddingGenerator()
 
-# Test integration of loading, chunking, embedding, and retrieval
+
 def test_end_to_end_dense(tmp_path, embedding_generator):
+    """Load documents, chunk, embed, and retrieve with three topic-specific queries."""
     # Create a examples documents in the temporary directory
     doc1 = tmp_path / "python.txt"
     doc1.write_text(

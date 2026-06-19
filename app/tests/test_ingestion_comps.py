@@ -4,21 +4,15 @@ from app.ingestion.loader import load_documents
 from app.ingestion.chunking import chunk_document, chunk_documents
 from app.ingestion.embeddings import EmbeddingGenerator
 
-def test_load_documents():
-    test_dir = Path('test_data')
-    test_dir.mkdir(exist_ok=True)
-    (test_dir / 'doc1.txt').write_text('This is the first document.')
-    (test_dir / 'doc2.md').write_text('This is the second document.')
+def test_load_documents(tmp_path):
+    (tmp_path / 'doc1.txt').write_text('This is the first document.')
+    (tmp_path / 'doc2.md').write_text('This is the second document.')
 
-    documents = load_documents(str(test_dir))
+    documents = load_documents(str(tmp_path))
     
     assert len(documents) == 2
     assert documents[0]['content'] == 'This is the first document.'
     assert documents[1]['content'] == 'This is the second document.'
-
-    for file in test_dir.iterdir():
-        file.unlink()
-    test_dir.rmdir()
 
 def test_chunk_document():
     document = {

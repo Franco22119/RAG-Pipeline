@@ -1,3 +1,5 @@
+"""Integration test: full pipeline with SparseRetriever."""
+
 import pytest
 from pathlib import Path
 
@@ -5,7 +7,9 @@ from app.ingestion.loader import load_documents
 from app.ingestion.chunking import chunk_documents
 from app.retrieval.sparse import SparseRetriever
 
+
 def test_end_to_end_sparse_retrieval(tmp_path):
+    """Load, chunk, build BM25 index, and search three topic-specific queries."""
     doc1 = tmp_path / "python.txt"
     doc1.write_text(
         "Python is a high-level programming language known for its readability and simplicity. "

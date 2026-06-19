@@ -1,7 +1,10 @@
 from collections import defaultdict
 
-
 class HybridRetrieval:
+    """
+    Hybrid retrieval with Reciprocal Rank Fusion (RRF)
+    """
+
     def __init__(self, rrf_k: int = 60):
         self.rrf_k = rrf_k
 

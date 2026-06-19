@@ -1,3 +1,5 @@
+"""Unit tests for DenseRetriever."""
+
 import numpy as np
 import pytest
 
@@ -5,6 +7,7 @@ from app.retrieval.dense import DenseRetriever
 
 
 def test_build_index():
+    """Build a FAISS index and verify it stores the correct number of documents."""
     retriever = DenseRetriever()
     chunks = [
         {'content': 'First document', 'metadata': {'source': 'doc1.txt', 'chunk_id': 0}},
@@ -20,6 +23,7 @@ def test_build_index():
 
 
 def test_search():
+    """Search returns results in correct format with the most similar document first."""
     retriever = DenseRetriever()
     chunks = [
         {'content': 'Python is a programming language', 'metadata': {'source': 'doc1.txt', 'chunk_id': 0}},
@@ -44,6 +48,7 @@ def test_search():
 
 
 def test_search_top_k():
+    """top_k parameter is respected and capped at the number of indexed documents."""
     retriever = DenseRetriever()
     chunks = [{'content': f'Doc {i}', 'metadata': {}} for i in range(10)]
     embeddings = np.random.rand(10, 4).astype(np.float32)
@@ -62,6 +67,7 @@ def test_search_top_k():
 
 
 def test_build_index_dimension_mismatch():
+    """ValueError is raised when chunk count does not match embedding count."""
     chunks = [
         {'content': 'a', 'metadata': {}},
         {'content': 'b', 'metadata': {}},
@@ -74,6 +80,7 @@ def test_build_index_dimension_mismatch():
 
 
 def test_search_without_index():
+    """ValueError is raised when search is called before building the index."""
     retriever = DenseRetriever()
     query_embedding = np.random.rand(4).astype(np.float32)
 

@@ -1,3 +1,5 @@
+"""Integration test: full pipeline with HybridRetrieval (dense + sparse + RRF)."""
+
 import pytest
 from pathlib import Path
 
@@ -11,10 +13,12 @@ from app.retrieval.hybrid import HybridRetrieval
 
 @pytest.fixture(scope="module")
 def embedding_generator():
+    """Shared EmbeddingGenerator fixture, loaded once per module."""
     return EmbeddingGenerator()
 
 
 def test_end_to_end_hybrid(tmp_path, embedding_generator):
+    """Load, chunk, embed, retrieve from both systems, and fuse with RRF."""
     doc1 = tmp_path / "python.txt"
     doc1.write_text(
         "Python is a high-level programming language known for its readability and simplicity. "
