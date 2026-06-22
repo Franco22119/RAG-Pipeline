@@ -45,25 +45,54 @@ rag-pipeline/
 |   |   ├── embeddings.py  # Genera el embeddings de los chunks
 │   ├── reranker/
 │   │   └── cross_encoder.py  # Cross-encoder reranker (sentence-transformers)
-│   ├── evaluation/
-│   │   ├── metrics.py    # Métricas: Recall@k, MRR, NDCG, MAP
-    │   └── benchmark.py  # Benchmarking y evaluación
-│   ├── api/
-│   │   └── routes.py     # FastAPI routes
-│   ├── notebooks/        # Jupyter notebooks para experimentación (no fijo)
 │   └── tests/            # Tests unitarios
-├── data/
-│   ├── raw/              # Datos crudos (PDFs, txt, etc.)
-│   └── processed/        # Datos procesados (chunks, embeddings, índices)
 ├── requirements.txt
 └── README.md
 ```
 
-## Instalación
+## Pre-requisitos
+
+### Ollama
+
+Instalar [Ollama](https://ollama.com/) y descargar el modelo local:
+
+```bash
+ollama pull llama3.2
+```
+
+### Dependencias Python
 
 ```bash
 pip install -r requirements.txt
 ```
+
+### Primera ejecución
+
+Los modelos de Hugging Face (`all-MiniLM-L6-v2`, `cross-encoder/ms-marco-MiniLM-L-6-v2`) utilizados necesitan descargarse la primera vez ejecutados. Para ello, comentá temporalmente `os.environ["HF_HUB_OFFLINE"] = "1"` en `app/main.py` o seteá un `HF_TOKEN`:
+
+```bash
+$env:HF_TOKEN = "hf_..."
+```
+
+Una vez descargados ya son cacheados para luego correr completamente offline.
+
+## Uso
+
+```bash
+python -m app.main "ruta/a/documentos" "tu pregunta?"
+```
+
+Ejemplos:
+
+```bash
+python -m app.main "./data_samples" "Quien creo Python?"
+# Output: Answer: Guido van Rossum.
+
+python -m app.main "./data_samples" "Cual es la capital de Chile?"
+# Output: Answer: Santiago.
+```
+
+El pipeline carga documentos `.txt` y `.md` del directorio, los procesa localmente (chunking → embeddings → FAISS + BM25 → fusión híbrida → cross-encoder reranking → generación con Ollama/llama3.2) y devuelve la respuesta por terminal.
 
 ## Pipeline RAG Híbrido
 
